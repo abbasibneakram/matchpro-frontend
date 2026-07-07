@@ -19,6 +19,7 @@ export type ProfileFormValues = {
   prefReligion?: string;
   prefSect?: string;
   prefCaste?: string;
+  rawPastedText?: string; // set when this profile came from Module 3's AI extraction
 };
 
 const emptyValues: ProfileFormValues = {

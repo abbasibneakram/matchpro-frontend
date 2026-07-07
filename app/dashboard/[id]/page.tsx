@@ -1,8 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { api } from '@/lib/api';
 import ProfileForm, { ProfileFormValues } from '@/components/ProfileForm';
+import PhotoUploader from '@/components/PhotoUploader';
 
 export default function ProfileDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -53,7 +55,20 @@ export default function ProfileDetailPage() {
         </button>
       </div>
 
+      {profile.status === 'ACTIVE' && (
+        <Link
+          href={`/dashboard/${profile.id}/matches`}
+          className="inline-block mb-6 text-sm bg-black text-white rounded px-4 py-2"
+        >
+          Find matches
+        </Link>
+      )}
+
       <ProfileForm initial={profile} onSubmit={handleSubmit} submitLabel="Save changes" />
+
+      <div className="mt-8 pt-6 border-t">
+        <PhotoUploader profileId={profile.id} />
+      </div>
     </div>
   );
 }
