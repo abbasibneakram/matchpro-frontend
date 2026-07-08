@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { api } from '@/lib/api';
 import ProfileForm, { ProfileFormValues } from '@/components/ProfileForm';
 import PhotoUploader from '@/components/PhotoUploader';
+import PaymentTracker from '@/components/PaymentTracker';
 
 export default function ProfileDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -68,6 +69,15 @@ export default function ProfileDetailPage() {
 
       <div className="mt-8 pt-6 border-t">
         <PhotoUploader profileId={profile.id} />
+      </div>
+
+      <div className="mt-8 pt-6 border-t">
+        <PaymentTracker
+          profileId={profile.id}
+          feeAgreed={Number(profile.feeAgreed ?? 0)}
+          amountPaid={Number(profile.amountPaid ?? 0)}
+          onUpdated={(updated) => setProfile((prev: any) => ({ ...prev, ...updated }))}
+        />
       </div>
     </div>
   );
