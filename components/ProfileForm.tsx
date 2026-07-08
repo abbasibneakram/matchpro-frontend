@@ -44,7 +44,7 @@ export default function ProfileForm({
   function field(key: keyof ProfileFormValues) {
     return {
       value: (values[key] as string | number) ?? '',
-      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
         setValues((v) => ({ ...v, [key]: e.target.value })),
     };
   }
