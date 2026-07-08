@@ -2,17 +2,48 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
-import MatchCard from '@/components/MatchCard';
+import MatchCard, { MatchData } from '@/components/MatchCard';
 
 export default function MatchesPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [matches, setMatches] = useState<any[] | null>(null);
+  const [matches, setMatches] = useState<MatchData[] | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get(`/profiles/${id}/matches`).then(setMatches).catch((err) => setError(err.message));
+    loadMatches();
   }, [id]);
+
+  function loadMatches() {
+    api.get(`/profiles/${id}/matches`).then(setMatches).catch((err) => setError(err.message));
+  }
+
+  async function handleShare(targetId: string) {
+    setError('');
+    try {
+      const { shareUrl, matchId, status } = await api.post(`/profiles/${id}/matches/${targetId}/share`, {});
+      window.open(shareUrl, '_blank');
+      // Update local state so the button flips to "Share again" and the
+      // status dropdown appears, without a full reload.
+      setMatches((prev) =>
+        prev?.map((m) => (m.profile.id === targetId ? { ...m, matchId, status } : m)) ?? null,
+      );
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }
+
+  async function handleStatusChange(matchId: string, status: string) {
+    setError('');
+    try {
+      await api.patch(`/matches/${matchId}/status`, { status });
+      setMatches((prev) =>
+        prev?.map((m) => (m.matchId === matchId ? { ...m, status } : m)) ?? null,
+      );
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }
 
   return (
     <div>
@@ -24,7 +55,7 @@ export default function MatchesPage() {
         Ranked by mutual fit — both sides' preferences are weighed, not just one.
       </p>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
       {matches === null && !error && <p className="text-gray-500">Finding matches…</p>}
       {matches?.length === 0 && (
         <p className="text-gray-500">
@@ -34,7 +65,14 @@ export default function MatchesPage() {
       )}
 
       <div className="space-y-3">
-        {matches?.map((m) => <MatchCard key={m.profile.id} match={m} />)}
+        {matches?.map((m) => (
+          <MatchCard
+            key={m.profile.id}
+            match={m}
+            onShare={handleShare}
+            onStatusChange={handleStatusChange}
+          />
+        ))}
       </div>
     </div>
   );

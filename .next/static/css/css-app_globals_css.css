@@ -536,6 +536,9 @@ video {
 .mb-6 {
   margin-bottom: 1.5rem;
 }
+.ml-3 {
+  margin-left: 0.75rem;
+}
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -736,6 +739,9 @@ video {
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+.pt-3 {
+  padding-top: 0.75rem;
 }
 .pt-6 {
   padding-top: 1.5rem;
