@@ -68,45 +68,45 @@ export default function ProfileForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <section className="space-y-3">
-        <h2 className="font-medium text-gray-700">Profile details</h2>
+        <p className="text-xs uppercase tracking-wide text-ink/50">Profile details</p>
         <div className="grid grid-cols-2 gap-3">
-          <select className="border rounded p-2" {...field('gender')}>
+          <select className="field" {...field('gender')}>
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
           </select>
-          <input className="border rounded p-2" placeholder="Name" required {...field('name')} />
-          <input className="border rounded p-2" type="number" placeholder="Age" required {...field('age')} />
-          <input className="border rounded p-2" placeholder="City" {...field('city')} />
-          <input className="border rounded p-2" placeholder="Education" {...field('education')} />
-          <input className="border rounded p-2" placeholder="Profession" {...field('profession')} />
-          <input className="border rounded p-2" placeholder="Religion" {...field('religion')} />
-          <input className="border rounded p-2" placeholder="Sect" {...field('sect')} />
-          <input className="border rounded p-2" placeholder="Caste" {...field('caste')} />
+          <input className="field" placeholder="Name" required {...field('name')} />
+          <input className="field" type="number" placeholder="Age" required {...field('age')} />
+          <input className="field" placeholder="City" {...field('city')} />
+          <input className="field" placeholder="Education" {...field('education')} />
+          <input className="field" placeholder="Profession" {...field('profession')} />
+          <input className="field" placeholder="Religion" {...field('religion')} />
+          <input className="field" placeholder="Sect" {...field('sect')} />
+          <input className="field" placeholder="Caste" {...field('caste')} />
         </div>
         <textarea
-          className="w-full border rounded p-2"
+          className="field w-full"
           placeholder="Family details"
           {...field('familyDetails')}
         />
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-medium text-gray-700">Looking for (used by matching later)</h2>
+        <p className="text-xs uppercase tracking-wide text-ink/50">Looking for</p>
         <div className="grid grid-cols-2 gap-3">
-          <input className="border rounded p-2" type="number" placeholder="Min age" {...field('prefAgeMin')} />
-          <input className="border rounded p-2" type="number" placeholder="Max age" {...field('prefAgeMax')} />
-          <input className="border rounded p-2" placeholder="Preferred city" {...field('prefCity')} />
-          <input className="border rounded p-2" placeholder="Preferred education" {...field('prefEducation')} />
-          <input className="border rounded p-2" placeholder="Preferred religion" {...field('prefReligion')} />
-          <input className="border rounded p-2" placeholder="Preferred sect" {...field('prefSect')} />
-          <input className="border rounded p-2" placeholder="Preferred caste" {...field('prefCaste')} />
+          <input className="field" type="number" placeholder="Min age" {...field('prefAgeMin')} />
+          <input className="field" type="number" placeholder="Max age" {...field('prefAgeMax')} />
+          <input className="field" placeholder="Preferred city" {...field('prefCity')} />
+          <input className="field" placeholder="Preferred education" {...field('prefEducation')} />
+          <input className="field" placeholder="Preferred religion" {...field('prefReligion')} />
+          <input className="field" placeholder="Preferred sect" {...field('prefSect')} />
+          <input className="field" placeholder="Preferred caste" {...field('prefCaste')} />
         </div>
       </section>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-      <button disabled={saving} className="bg-black text-white rounded px-4 py-2">
+      {error && <p className="text-rose text-sm">{error}</p>}
+      <button disabled={saving} className="btn-primary">
         {saving ? 'Saving…' : submitLabel}
       </button>
     </form>

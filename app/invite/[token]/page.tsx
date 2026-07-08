@@ -24,37 +24,44 @@ export default function InvitePage() {
       setStatus('submitted');
     } catch (err: any) {
       setError(err.message);
-      throw err; // lets ProfileForm show the error inline and re-enable the button
+      throw err;
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 mt-12">
-      <h1 className="text-xl font-medium mb-1">Fill in your profile</h1>
-      <p className="text-sm text-gray-500 mb-6">
-        Your matchmaker sent you this link so you can fill in your own details.
-      </p>
-
-      {status === 'checking' && <p className="text-gray-500">Checking link…</p>}
-
-      {status === 'invalid' && (
-        <p className="text-red-600">
-          This link is invalid or has already been used. Please ask your matchmaker for a new one.
+    <div className="min-h-screen px-4 py-12">
+      <div className="max-w-2xl mx-auto">
+        <p className="font-display italic text-2xl mb-1">MatchPro</p>
+        <h1 className="text-lg font-medium mb-1">Fill in your profile</h1>
+        <p className="text-sm text-ink/60 mb-6">
+          Your matchmaker sent you this link so you can fill in your own details.
         </p>
-      )}
 
-      {status === 'valid' && (
-        <>
-          {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
-          <ProfileForm onSubmit={handleSubmit} submitLabel="Submit my profile" />
-        </>
-      )}
+        {status === 'checking' && <p className="text-ink/50">Checking link…</p>}
 
-      {status === 'submitted' && (
-        <p className="text-green-700">
-          Thanks — your profile has been submitted. Your matchmaker will review it shortly.
-        </p>
-      )}
+        {status === 'invalid' && (
+          <div className="index-card p-6">
+            <p className="text-rose">
+              This link is invalid or has already been used. Please ask your matchmaker for a new one.
+            </p>
+          </div>
+        )}
+
+        {status === 'valid' && (
+          <div className="index-card p-6">
+            {error && <p className="text-rose text-sm mb-3">{error}</p>}
+            <ProfileForm onSubmit={handleSubmit} submitLabel="Submit my profile" />
+          </div>
+        )}
+
+        {status === 'submitted' && (
+          <div className="index-card p-6">
+            <p className="text-teal-dark">
+              Thanks — your profile has been submitted. Your matchmaker will review it shortly.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

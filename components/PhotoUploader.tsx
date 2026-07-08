@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { Camera } from 'lucide-react';
 import { api } from '@/lib/api';
 
 type Photo = { id: string; url: string };
@@ -35,31 +36,31 @@ export default function PhotoUploader({ profileId }: { profileId: string }) {
   }
 
   async function handleDelete(photoId: string) {
-    setPhotos((prev) => prev?.filter((p) => p.id !== photoId) ?? null); // optimistic
+    setPhotos((prev) => prev?.filter((p) => p.id !== photoId) ?? null);
     try {
       await api.delete(`/profiles/${profileId}/photos/${photoId}`);
     } catch (err: any) {
       setError(err.message);
-      loadPhotos(); // revert on failure
+      loadPhotos();
     }
   }
 
   return (
     <div>
-      <h2 className="font-medium text-gray-700 mb-2">Photos</h2>
-      <p className="text-xs text-gray-500 mb-3">
-        Private — only visible to you, never public.
+      <p className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-ink/50 mb-1">
+        <Camera size={13} strokeWidth={2} /> Photos
       </p>
+      <p className="text-xs text-ink/50 mb-3">Private — only visible to you, never public.</p>
 
-      {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
+      {error && <p className="text-rose text-sm mb-2">{error}</p>}
 
       <div className="grid grid-cols-4 gap-3 mb-3">
         {photos?.map((photo) => (
           <div key={photo.id} className="relative group">
-            <img src={photo.url} alt="" className="w-full aspect-square object-cover rounded border" />
+            <img src={photo.url} alt="" className="w-full aspect-square object-cover rounded-sm border border-line" />
             <button
               onClick={() => handleDelete(photo.id)}
-              className="absolute top-1 right-1 bg-black/70 text-white text-xs rounded px-1.5 py-0.5 opacity-0 group-hover:opacity-100"
+              className="absolute top-1 right-1 bg-ink/80 text-paper text-xs rounded px-1.5 py-0.5 opacity-0 group-hover:opacity-100"
             >
               Remove
             </button>
@@ -75,7 +76,7 @@ export default function PhotoUploader({ profileId }: { profileId: string }) {
         disabled={uploading}
         className="text-sm"
       />
-      {uploading && <p className="text-sm text-gray-500 mt-1">Uploading…</p>}
+      {uploading && <p className="text-sm text-ink/50 mt-1">Uploading…</p>}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Wallet } from 'lucide-react';
 import { api } from '@/lib/api';
 
 export default function PaymentTracker({
@@ -38,43 +39,41 @@ export default function PaymentTracker({
 
   return (
     <div>
-      <h2 className="font-medium text-gray-700 mb-3">Payment</h2>
+      <p className="flex items-center gap-1.5 text-xs uppercase tracking-wide text-ink/50 mb-3">
+        <Wallet size={13} strokeWidth={2} /> Payment
+      </p>
       <div className="grid grid-cols-3 gap-3 items-end">
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Fee agreed</label>
+          <label className="text-xs text-ink/50 block mb-1">Fee agreed</label>
           <input
             type="number"
             min="0"
-            className="w-full border rounded p-2"
+            className="field num"
             value={fee}
             onChange={(e) => setFee(e.target.value)}
           />
         </div>
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Amount paid</label>
+          <label className="text-xs text-ink/50 block mb-1">Amount paid</label>
           <input
             type="number"
             min="0"
-            className="w-full border rounded p-2"
+            className="field num"
             value={paid}
             onChange={(e) => setPaid(e.target.value)}
           />
         </div>
         <div>
-          <label className="text-xs text-gray-500 block mb-1">Balance</label>
-          <div className={`p-2 rounded border font-medium ${balance > 0 ? 'text-orange-700 bg-orange-50' : 'text-green-700 bg-green-50'}`}>
+          <label className="text-xs text-ink/50 block mb-1">Balance</label>
+          <div className={`num p-2 rounded-sm border font-medium ${balance > 0 ? 'text-marigold border-marigold-soft bg-marigold-soft/40' : 'text-teal-dark border-teal-soft bg-teal-soft'}`}>
             {balance.toFixed(2)}
           </div>
         </div>
       </div>
 
-      {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+      {error && <p className="text-rose text-sm mt-2">{error}</p>}
 
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className="mt-3 text-sm border rounded px-4 py-2"
-      >
+      <button onClick={handleSave} disabled={saving} className="btn-secondary mt-3">
         {saving ? 'Saving…' : 'Save payment'}
       </button>
     </div>

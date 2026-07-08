@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-body antialiased;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+  }
+  /* Data reads as data: every number in the app uses the mono face. */
+  .num {
+    @apply font-mono tabular-nums;
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.teal.DEFAULT');
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition-colors;
+  }
+  .btn-primary {
+    @apply btn bg-teal text-paper hover:bg-teal-dark disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply btn border border-line bg-white text-ink hover:border-teal hover:text-teal disabled:opacity-50;
+  }
+  .btn-text {
+    @apply text-sm text-teal underline underline-offset-2 hover:text-teal-dark;
+  }
+
+  .field {
+    @apply w-full rounded border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink/40 focus:border-teal;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded px-2.5 py-1 text-xs font-medium;
+  }
+
+  /* Signature element: every profile/match record reads as an index card —
+     a folded top-right corner via clip-path, the way a matchmaker's own
+     paper card catalog would look. Kept subtle: one visual idea, not layered
+     with extra ornament. */
+  .index-card {
+    @apply relative bg-white border border-line rounded-sm shadow-[0_1px_2px_rgba(27,35,33,0.06)];
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+  }
+  .index-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, transparent 50%, theme('colors.line') 50%);
+  }
+}

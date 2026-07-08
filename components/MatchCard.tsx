@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { MessageCircle } from 'lucide-react';
 
 const STATUS_LABELS: Record<string, string> = {
   SUGGESTED: 'Shared',
@@ -12,10 +13,10 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_OPTIONS = ['INTERESTED', 'MEETING_SCHEDULED', 'REJECTED', 'MARRIED'];
 
-function scoreColor(score: number) {
-  if (score >= 70) return 'bg-green-100 text-green-800';
-  if (score >= 40) return 'bg-yellow-100 text-yellow-800';
-  return 'bg-gray-100 text-gray-600';
+function scoreStyle(score: number) {
+  if (score >= 70) return 'bg-teal-soft text-teal-dark';
+  if (score >= 40) return 'bg-marigold-soft text-marigold';
+  return 'bg-line/50 text-ink/50';
 }
 
 export type MatchData = {
@@ -48,26 +49,23 @@ export default function MatchCard({
   }
 
   return (
-    <div className="border rounded p-4 bg-white">
+    <div className="index-card p-4">
       <div className="flex items-center justify-between">
-        <Link href={`/dashboard/${profile.id}`} className="min-w-0">
+        <Link href={`/dashboard/${profile.id}`} className="min-w-0 hover:underline">
           <p className="font-medium">{profile.name}</p>
-          <p className="text-sm text-gray-500">
-            {profile.age} yrs{profile.city ? ` · ${profile.city}` : ''}
+          <p className="text-sm text-ink/60">
+            <span className="num">{profile.age}</span> yrs{profile.city ? ` · ${profile.city}` : ''}
             {profile.education ? ` · ${profile.education}` : ''}
           </p>
         </Link>
-        <span className={`text-sm font-medium px-2.5 py-1 rounded shrink-0 ml-3 ${scoreColor(score)}`}>
+        <span className={`badge num shrink-0 ml-3 ${scoreStyle(score)}`}>
           {score}% match
         </span>
       </div>
 
-      <div className="flex items-center gap-2 mt-3 pt-3 border-t">
-        <button
-          onClick={handleShare}
-          disabled={sharing}
-          className="text-sm border rounded px-3 py-1.5"
-        >
+      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-line">
+        <button onClick={handleShare} disabled={sharing} className="btn-secondary py-1.5 gap-1.5">
+          <MessageCircle size={15} strokeWidth={2} />
           {sharing ? 'Sharing…' : matchId ? 'Share again' : 'Share on WhatsApp'}
         </button>
 
@@ -75,7 +73,7 @@ export default function MatchCard({
           <select
             value={status ?? 'SUGGESTED'}
             onChange={(e) => onStatusChange(matchId, e.target.value)}
-            className="text-sm border rounded px-2 py-1.5"
+            className="field w-auto py-1.5"
           >
             <option value="SUGGESTED" disabled>{STATUS_LABELS.SUGGESTED}</option>
             {STATUS_OPTIONS.map((s) => (
