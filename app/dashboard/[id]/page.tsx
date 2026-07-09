@@ -2,8 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useToast } from '@/components/Toast';
 import ProfileForm, { ProfileFormValues } from '@/components/ProfileForm';
 import PhotoUploader from '@/components/PhotoUploader';
 import PaymentTracker from '@/components/PaymentTracker';
@@ -23,17 +24,19 @@ const statusLabels: Record<string, string> = {
 export default function ProfileDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const toast = useToast();
   const [profile, setProfile] = useState<any | null>(null);
-  const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
   const [statusSaving, setStatusSaving] = useState(false);
 
   useEffect(() => {
-    api.get(`/profiles/${id}`).then(setProfile).catch((err) => setError(err.message));
+    api.get(`/profiles/${id}`).then(setProfile).catch((err) => setLoadError(err.message));
   }, [id]);
 
   async function handleSubmit(values: ProfileFormValues) {
     const updated = await api.patch(`/profiles/${id}`, values);
     setProfile(updated);
+    toast.success('Profile updated');
   }
 
   async function toggleStatus() {
@@ -43,12 +46,15 @@ export default function ProfileDetailPage() {
     try {
       const updated = await api.patch(`/profiles/${id}`, { status: nextStatus });
       setProfile(updated);
+      toast.success(nextStatus === 'ACTIVE' ? 'Profile activated' : 'Profile deactivated');
+    } catch (err: any) {
+      toast.error(err.message);
     } finally {
       setStatusSaving(false);
     }
   }
 
-  if (error) return <p className="text-rose text-sm">{error}</p>;
+  if (loadError) return <p className="text-rose text-sm">{loadError}</p>;
 
   if (!profile) {
     return (
@@ -70,9 +76,9 @@ export default function ProfileDetailPage() {
         <ArrowLeft size={14} /> Back to profiles
       </button>
 
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-6">
         <div>
-          <div className="flex items-center gap-2.5 mb-1">
+          <div className="flex items-center gap-2.5 mb-1 flex-wrap">
             <h1 className="text-2xl font-display italic">{profile.name}</h1>
             <span className={`badge ${statusStyles[profile.status]}`}>{statusLabels[profile.status]}</span>
           </div>
@@ -82,11 +88,12 @@ export default function ProfileDetailPage() {
           </p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <button onClick={toggleStatus} disabled={statusSaving} className="btn-secondary">
+          <button onClick={toggleStatus} disabled={statusSaving} className="btn-secondary flex-1 sm:flex-none justify-center gap-1.5">
+            {statusSaving && <Loader2 size={14} className="animate-spin" />}
             {profile.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
           </button>
           {profile.status === 'ACTIVE' && (
-            <Link href={`/dashboard/${profile.id}/matches`} className="btn-primary gap-1.5">
+            <Link href={`/dashboard/${profile.id}/matches`} className="btn-primary gap-1.5 flex-1 sm:flex-none justify-center">
               <Sparkles size={16} strokeWidth={2} />
               Find matches
             </Link>

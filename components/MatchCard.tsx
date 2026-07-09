@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Loader2 } from 'lucide-react';
 
 const STATUS_LABELS: Record<string, string> = {
   SUGGESTED: 'Shared',
@@ -65,7 +65,7 @@ export default function MatchCard({
 
       <div className="flex items-center gap-2 mt-3 pt-3 border-t border-line">
         <button onClick={handleShare} disabled={sharing} className="btn-secondary py-1.5 gap-1.5">
-          <MessageCircle size={15} strokeWidth={2} />
+          {sharing ? <Loader2 size={15} className="animate-spin" /> : <MessageCircle size={15} strokeWidth={2} />}
           {sharing ? 'Sharing…' : matchId ? 'Share again' : 'Share on WhatsApp'}
         </button>
 

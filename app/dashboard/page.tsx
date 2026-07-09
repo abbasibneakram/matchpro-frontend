@@ -1,20 +1,26 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { UserPlus, Plus, Link2, Copy, Check, Users } from 'lucide-react';
+import { UserPlus, Plus, Link2, Copy, Check, Users, Search, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useToast } from '@/components/Toast';
 import ProfileRow from '@/components/ProfileRow';
 import StatCard from '@/components/StatCard';
 
+type StatusFilter = 'ALL' | 'ACTIVE' | 'PENDING_REVIEW' | 'INACTIVE';
+
 export default function DashboardPage() {
+  const toast = useToast();
   const [profiles, setProfiles] = useState<any[] | null>(null);
-  const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
   const [inviteUrl, setInviteUrl] = useState('');
   const [inviteLoading, setInviteLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
 
   useEffect(() => {
-    api.get('/profiles').then(setProfiles).catch((err) => setError(err.message));
+    api.get('/profiles').then(setProfiles).catch((err) => setLoadError(err.message));
   }, []);
 
   async function handleGenerateInvite() {
@@ -24,7 +30,7 @@ export default function DashboardPage() {
       const { token } = await api.post('/profiles/invite', {});
       setInviteUrl(`${window.location.origin}/invite/${token}`);
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setInviteLoading(false);
     }
@@ -33,6 +39,7 @@ export default function DashboardPage() {
   function handleCopy() {
     navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
+    toast.success('Link copied to clipboard');
   }
 
   const counts = {
@@ -42,34 +49,44 @@ export default function DashboardPage() {
     inactive: profiles?.filter((p) => p.status === 'INACTIVE').length ?? 0,
   };
 
+  const filteredProfiles = useMemo(() => {
+    if (!profiles) return null;
+    const q = query.trim().toLowerCase();
+    return profiles.filter((p) => {
+      const matchesStatus = statusFilter === 'ALL' || p.status === statusFilter;
+      const matchesQuery = !q || p.name.toLowerCase().includes(q) || (p.city ?? '').toLowerCase().includes(q);
+      return matchesStatus && matchesQuery;
+    });
+  }, [profiles, query, statusFilter]);
+
   return (
     <div>
-      <div className="flex justify-between items-start mb-7">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-7">
         <div>
           <h1 className="text-2xl font-display italic">Profiles</h1>
           <p className="text-sm text-ink/60 mt-0.5">Every person you're matching, in one place.</p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <button onClick={handleGenerateInvite} disabled={inviteLoading} className="btn-secondary gap-1.5">
-            <UserPlus size={16} strokeWidth={2} />
-            {inviteLoading ? 'Generating…' : 'Invite a client'}
+          <button onClick={handleGenerateInvite} disabled={inviteLoading} className="btn-secondary gap-1.5 flex-1 sm:flex-none justify-center">
+            {inviteLoading ? <Loader2 size={16} className="animate-spin" /> : <UserPlus size={16} strokeWidth={2} />}
+            <span className="sm:inline">{inviteLoading ? 'Generating…' : 'Invite a client'}</span>
           </button>
-          <Link href="/dashboard/new" className="btn-primary gap-1.5">
+          <Link href="/dashboard/new" className="btn-primary gap-1.5 flex-1 sm:flex-none justify-center">
             <Plus size={16} strokeWidth={2} />
             Add profile
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-6">
-        <StatCard label="Total" value={counts.total} />
-        <StatCard label="Active" value={counts.active} tone="teal" />
-        <StatCard label="Pending review" value={counts.pending} tone="marigold" />
-        <StatCard label="Inactive" value={counts.inactive} tone="muted" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <StatCard label="Total" value={counts.total} active={statusFilter === 'ALL'} onClick={() => setStatusFilter('ALL')} />
+        <StatCard label="Active" value={counts.active} tone="teal" active={statusFilter === 'ACTIVE'} onClick={() => setStatusFilter('ACTIVE')} />
+        <StatCard label="Pending review" value={counts.pending} tone="marigold" active={statusFilter === 'PENDING_REVIEW'} onClick={() => setStatusFilter('PENDING_REVIEW')} />
+        <StatCard label="Inactive" value={counts.inactive} tone="muted" active={statusFilter === 'INACTIVE'} onClick={() => setStatusFilter('INACTIVE')} />
       </div>
 
       {inviteUrl && (
-        <div className="mb-6 index-card p-4 flex items-center gap-3">
+        <div className="mb-6 index-card p-4 flex items-center gap-3 animate-fade-in">
           <div className="w-9 h-9 rounded-full bg-teal-soft text-teal-dark flex items-center justify-center shrink-0">
             <Link2 size={16} strokeWidth={2} />
           </div>
@@ -84,9 +101,19 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {error && <p className="text-rose text-sm mb-3">{error}</p>}
+      <div className="relative mb-4">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by name or city…"
+          className="field pl-9"
+        />
+      </div>
 
-      {profiles === null && !error && (
+      {loadError && <p className="text-rose text-sm mb-3">{loadError}</p>}
+
+      {profiles === null && !loadError && (
         <div className="index-card divide-y divide-line overflow-hidden">
           {[0, 1, 2].map((i) => (
             <div key={i} className="flex items-center gap-3 px-4 py-3.5 animate-pulse">
@@ -111,9 +138,16 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {profiles && profiles.length > 0 && (
-        <div className="index-card divide-y divide-line overflow-hidden">
-          {profiles.map((p) => <ProfileRow key={p.id} profile={p} />)}
+      {profiles && profiles.length > 0 && filteredProfiles?.length === 0 && (
+        <div className="index-card p-10 text-center">
+          <p className="font-display italic text-lg mb-1">No matches for this filter</p>
+          <p className="text-sm text-ink/60">Try a different search term or status.</p>
+        </div>
+      )}
+
+      {filteredProfiles && filteredProfiles.length > 0 && (
+        <div className="index-card divide-y divide-line overflow-hidden animate-fade-in">
+          {filteredProfiles.map((p) => <ProfileRow key={p.id} profile={p} />)}
         </div>
       )}
     </div>

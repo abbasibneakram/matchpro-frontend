@@ -37,7 +37,7 @@ export default function NewProfilePage() {
       <h1 className="text-2xl font-display italic mb-6">Add profile</h1>
 
       {mode === 'choose' && (
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => setMode('paste')}
             className="index-card p-5 flex-1 text-left hover:-translate-y-0.5 transition-transform"

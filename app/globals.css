@@ -21,7 +21,7 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition-colors;
+    @apply inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition-all active:scale-[0.97];
   }
   .btn-primary {
     @apply btn bg-teal text-paper hover:bg-teal-dark disabled:opacity-50;

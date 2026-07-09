@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export type ProfileFormValues = {
   gender: 'MALE' | 'FEMALE';
@@ -71,7 +72,7 @@ export default function ProfileForm({
     <form onSubmit={handleSubmit} className="space-y-8">
       <section className="space-y-3">
         <p className="text-xs uppercase tracking-wide text-ink/50">Profile details</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <select className="field" {...field('gender')}>
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
@@ -94,7 +95,7 @@ export default function ProfileForm({
 
       <section className="space-y-3">
         <p className="text-xs uppercase tracking-wide text-ink/50">Looking for</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input className="field" type="number" placeholder="Min age" {...field('prefAgeMin')} />
           <input className="field" type="number" placeholder="Max age" {...field('prefAgeMax')} />
           <input className="field" placeholder="Preferred city" {...field('prefCity')} />
@@ -106,7 +107,8 @@ export default function ProfileForm({
       </section>
 
       {error && <p className="text-rose text-sm">{error}</p>}
-      <button disabled={saving} className="btn-primary">
+      <button disabled={saving} className="btn-primary gap-1.5">
+        {saving && <Loader2 size={15} className="animate-spin" />}
         {saving ? 'Saving…' : submitLabel}
       </button>
     </form>

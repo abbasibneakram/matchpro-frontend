@@ -3,44 +3,46 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useToast } from '@/components/Toast';
 import MatchCard, { MatchData } from '@/components/MatchCard';
 
 export default function MatchesPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const toast = useToast();
   const [matches, setMatches] = useState<MatchData[] | null>(null);
-  const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     loadMatches();
   }, [id]);
 
   function loadMatches() {
-    api.get(`/profiles/${id}/matches`).then(setMatches).catch((err) => setError(err.message));
+    api.get(`/profiles/${id}/matches`).then(setMatches).catch((err) => setLoadError(err.message));
   }
 
   async function handleShare(targetId: string) {
-    setError('');
     try {
       const { shareUrl, matchId, status } = await api.post(`/profiles/${id}/matches/${targetId}/share`, {});
       window.open(shareUrl, '_blank');
       setMatches((prev) =>
         prev?.map((m) => (m.profile.id === targetId ? { ...m, matchId, status } : m)) ?? null,
       );
+      toast.success('Opened in WhatsApp');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   }
 
   async function handleStatusChange(matchId: string, status: string) {
-    setError('');
     try {
       await api.patch(`/matches/${matchId}/status`, { status });
       setMatches((prev) =>
         prev?.map((m) => (m.matchId === matchId ? { ...m, status } : m)) ?? null,
       );
+      toast.success('Status updated');
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -54,9 +56,9 @@ export default function MatchesPage() {
         Ranked by mutual fit — both sides' preferences are weighed, not just one.
       </p>
 
-      {error && <p className="text-rose text-sm mb-3">{error}</p>}
+      {loadError && <p className="text-rose text-sm mb-3">{loadError}</p>}
 
-      {matches === null && !error && (
+      {matches === null && !loadError && (
         <div className="space-y-3">
           {[0, 1, 2].map((i) => (
             <div key={i} className="index-card p-4 animate-pulse">
